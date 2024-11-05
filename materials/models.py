@@ -22,8 +22,8 @@ class Lessons(models.Model):
     preview = models.ImageField(
         upload_to="lessons", verbose_name=_("preview"), **NULLABLE
     )
-    url = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    url = models.TextField(**NULLABLE, verbose_name=_("url"))
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, **NULLABLE, verbose_name=_("course"))
 
     class Meta:
         verbose_name = _("lesson")
