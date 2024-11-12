@@ -13,6 +13,9 @@ from django.utils.translation import gettext_lazy as _
 
 from materials.paginators import CustomPagination
 
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied
+
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all().order_by("pk")
     serializer_class = serializers.CourseSerializer
