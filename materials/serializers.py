@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, URLField
 
-from materials.models import Course, Lessons
+from materials.models import Course, Lessons, Subscription
 from materials.validators import URLCorrectValidator
 
 class LessonSerializer(ModelSerializer):
@@ -12,12 +12,21 @@ class LessonSerializer(ModelSerializer):
 class CourseDetailSerializer(ModelSerializer):
     count_lessons = SerializerMethodField()
     lessons = LessonSerializer(many=True)
+    subscription = SerializerMethodField()
+
+    def get_subscription(self, instance):
+        return Subscription.objects.filter(course=instance).exists()
 
     def get_count_lessons(self, instance):
         return Lessons.objects.filter(course=instance).count()
 
     class Meta:
         model = Course
+        fields = "__all__"
+
+class SubscriptionSerializer(ModelSerializer):
+    class Meta:
+        model = Subscription
         fields = "__all__"
 
 class CourseSerializer(ModelSerializer):
