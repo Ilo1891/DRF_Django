@@ -11,10 +11,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.utils.translation import gettext_lazy as _
 
+from materials.paginators import CustomPagination
 
 class CourseViewSet(ModelViewSet):
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by("pk")
     serializer_class = serializers.CourseSerializer
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -49,8 +51,9 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 
 class LessonListAPIView(generics.ListAPIView):
-    queryset = Lessons.objects.all()
+    queryset = Lessons.objects.all().order_by("pk")
     serializer_class = serializers.LessonSerializer
+    pagination_class = CustomPagination
 
 
     def perform_create(self, serializer):
@@ -110,6 +113,6 @@ class SubscriptionCreateDestroyAPIView(generics.CreateAPIView):
             message["success"] = _("subscription created")
             stat = status.HTTP_201_CREATED
         return message, stat
-class SubscriptionListAPIView(generics.ListAPIView):
-    queryset = Subscription.objects.all()
-    serializer_class = serializers.SubscriptionSerializer
+# class SubscriptionListAPIView(generics.ListAPIView):
+#     queryset = Subscription.objects.all()
+#     serializer_class = serializers.SubscriptionSerializer
