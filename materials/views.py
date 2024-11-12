@@ -3,6 +3,7 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      UpdateAPIView)
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from materials.permissions import IsModerator, IsOwner
 
 from materials.models import Course, Lessons
@@ -42,6 +43,11 @@ class CourseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         new_course = serializer.save(owner=self.request.user)
         super().perform_create(new_course)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.groups.filter(name='moderator').exists():
+            return queryset
+        return queryset.filter(owner=self.request.user)
 
 
 class LessonCreateAPIView(CreateAPIView):
@@ -58,6 +64,9 @@ class LessonListAPIView(ListAPIView):
         new_lesson = serializer.save(owner=self.request.user)
         super().perform_create(new_lesson)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(owner=self.request.user)
 
 class LessonRetrieveAPIView(RetrieveAPIView):
     queryset = Lessons.objects.all()

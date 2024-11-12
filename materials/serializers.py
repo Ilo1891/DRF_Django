@@ -1,11 +1,13 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, IntegerField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, URLField
 
 from materials.models import Course, Lessons
+from materials.validators import URLCorrectValidator
 
 class LessonSerializer(ModelSerializer):
     class Meta:
         model = Lessons
         fields = "__all__"
+        validators = [URLCorrectValidator(field="url", url="https://www.youtube.com/")]
 
 class CourseDetailSerializer(ModelSerializer):
     count_lessons = SerializerMethodField()
