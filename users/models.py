@@ -57,6 +57,8 @@ class Payment(models.Model):
     method = models.CharField(
         choices=METHOD_CHOICES, max_length=4, default="TRAN", verbose_name=_("method")
     )
+    session_id = models.CharField(max_length=127, **NULLABLE, verbose_name=_("session"))
+    url = models.URLField(max_length=511, **NULLABLE, verbose_name=_("url"))
 
     class Meta:
         verbose_name = _("payment")

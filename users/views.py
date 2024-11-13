@@ -13,6 +13,7 @@ from users.serializers import (
     UserSerializer,
     UserShortSerializer,
 )
+from users.services import convert_rub_to_usd, create_stripe_price, create_stripe_session
 
 
 class UserViewSet(ModelViewSet):
@@ -54,3 +55,12 @@ class PaymentViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filterset_fields = ("paid_course", "paid_lessons", "method")
     ordering_fields = ("date_payment",)
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        amount_in_dollar = convert_rub_to_usd(payment.amount)
+        price = create_stripe_price(amount_in_dollar)
+        session_id, url = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.url = url
+        super().perform_create(payment)
